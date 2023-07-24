@@ -13,6 +13,8 @@ const QuestionsPage = () => {
     trihalomethanesAmount: "",
     turbidityUnits: "",
   });
+  const [prediction, setPredicition] = useState();
+  const [first, setFirst] = useState(true);
 
   const questionLabels = {
     waterPHLevel: "Your Water pH level (0-14)?",
@@ -52,11 +54,33 @@ const QuestionsPage = () => {
     }
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Perform any data processing or validation before submitting the form
-    // For example, you can make the API call for portability check here
-    console.log(formData); // Displaying the form data for demonstration purposes
+  const handleSubmit = async () => {
+    // TODO: update this to server url when deploying
+    const response = await fetch(
+      "https://water-quality-prediction-e9ws.onrender.com/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ph: formData.waterPHLevel,
+          hardness: formData.waterPrecipitateSoap,
+          solids: formData.totalDissolvedSolids,
+          chloramines: formData.chloraminesAmount,
+          sulfate: formData.sulfatesDissolved,
+          conductivity: formData.electricalConductivity,
+          organic_carbon: formData.organicCarbonAmount,
+          trihalomethanes: formData.trihalomethanesAmount,
+          turbidity: formData.turbidityUnits,
+        }),
+      }
+    );
+
+    const result = await response.json();
+    // Set the result to some state and update the UI
+    setFirst(false);
+    setPredicition(result.prediction);
   };
 
   return (
@@ -79,7 +103,18 @@ const QuestionsPage = () => {
           </div>
         ))}
       </div>
-      <button type="submit">Check Portability</button>
+      <button onClick={handleSubmit} type="submit">
+        Check Portability
+      </button>
+      <div>
+        <h1>
+          {first
+            ? ""
+            : prediction
+            ? "The water is good to drink"
+            : "The water is not good to drink"}
+        </h1>
+      </div>
     </div>
   );
 };
