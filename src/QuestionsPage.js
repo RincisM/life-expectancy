@@ -57,7 +57,7 @@ const QuestionsPage = () => {
   const handleSubmit = async () => {
     // TODO: update this to server url when deploying
     const response = await fetch(
-      "https://water-quality-prediction-e9ws.onrender.com/",
+      "https://water-quality-prediction-e9ws.onrender.com/pred",
       {
         method: "POST",
         headers: {
